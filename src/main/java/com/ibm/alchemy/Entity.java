@@ -1,18 +1,15 @@
 package com.ibm.alchemy;
 
-import java.util.List;
 
 public class Entity {
 	private String name;
-	private double score;
+	private double relevance;
 	private String type;
-	private List<String> subTypes;
 
-	public Entity(String name, double score, String type, List<String> subTypes) {
+	public Entity(String name, double relevance, String type) {
 		this.name = name;
-		this.score = score;
+		this.relevance = relevance;
 		this.type = type;
-		this.subTypes = subTypes;
 	}
 	
 	public String getName() {
@@ -23,15 +20,8 @@ public class Entity {
 		return type;
 	}
 	
-	public List<String> getSubTypes() {
-		return subTypes;
+	public double getRelevance() {
+		return relevance;
 	}
-	
-	public double getScore() {
-		return score;
-	}
-	
-	public boolean containsSubType(String subType) {
-		return subTypes.contains(subType);
-	}
+
 }

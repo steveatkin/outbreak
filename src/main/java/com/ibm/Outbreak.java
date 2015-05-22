@@ -1,6 +1,8 @@
 package com.ibm;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.alchemy.Alert;
 
 /**
@@ -67,14 +70,21 @@ public class Outbreak extends HttpServlet implements ServletContextListener {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		response.setContentType("text/json");
+    	response.setCharacterEncoding("UTF-8");
+
+    	OutputStream stream = response.getOutputStream();
+    	OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
 		
 		List<Alert> alerts = FeedReader.getAlerts();
 		
-		for(Alert alert: alerts) {
-			System.out.println("ALERT: " + alert.toString());
-		}
-
+		ObjectMapper mapper = new ObjectMapper();
+		//String listContents = mapper.writeValueAsString(alerts);
+		String listContents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(alerts);
+		logger.debug("Alerts {}", listContents);
+		writer.write(listContents);
+		writer.flush();
+		writer.close();
 	}
 
 	/**

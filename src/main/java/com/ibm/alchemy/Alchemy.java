@@ -31,14 +31,7 @@ public class Alchemy {
 		
 	}
 	
-	private static <T> List<T> copyIterator(Iterator<T> iter) {
-	    List<T> copy = new ArrayList<T>();
-	    while (iter.hasNext())
-	        copy.add(iter.next());
-	    return copy;
-	}
-	
-	public Alert getAlert(SyndEntry entry) {
+	public Alert getAlerts(SyndEntry entry) {
 		Alert alert = new Alert();
 		alert.setHashCode(entry.hashCode());
 		alert.setTitle(entry.getTitle());
@@ -51,6 +44,8 @@ public class Alchemy {
 				AbstractCall<NamedEntityAlchemyEntity> rankedEntitiesCall = new RankedNamedEntitiesCall(new CallTypeUrl(url));
 				Response<NamedEntityAlchemyEntity> entityResponse = client.call(rankedEntitiesCall);
 				
+				alert.setConcepts(getConcepts(url));
+				
 				NamedEntityAlchemyEntity entityalchemyEntity;
 				Iterator<NamedEntityAlchemyEntity> iter = entityResponse.iterator();
 				
@@ -62,8 +57,7 @@ public class Alchemy {
 						Entity condition = new Entity(
 								entityalchemyEntity.getText(),
 								entityalchemyEntity.getScore(),
-								type,
-								copyIterator(entityalchemyEntity.subtypeIterator())
+								type
 								);
 						alert.addHealthCondition(condition);
 					}
@@ -71,11 +65,11 @@ public class Alchemy {
 						Entity location = new Entity(
 								entityalchemyEntity.getText(),
 								entityalchemyEntity.getScore(),
-								type,
-								copyIterator(entityalchemyEntity.subtypeIterator())
+								type
 								);
 						alert.addRelatedLocation(location);
 					}
+					
 				}
 			}
 			
@@ -85,11 +79,12 @@ public class Alchemy {
 			logger.error("could not get entities from alchemy {}", e.getMessage());
 		}
 		
+		logger.debug("Alert {}", alert.toString());
 		return alert;
 	}
 
-	public ArrayList<Concept> getConcepts(String url) {
-		ArrayList<Concept> concepts = new ArrayList<Concept>();
+	private List<Concept> getConcepts(String url) {
+		List<Concept> concepts = new ArrayList<Concept>();
 		
 		try {
 			if(url != null && apiKey != null) {

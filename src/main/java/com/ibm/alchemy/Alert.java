@@ -11,6 +11,7 @@ public class Alert {
 	
 	private List<Entity> healthConditions = new ArrayList<Entity>();
 	private List<Entity> relatedLocations = new ArrayList<Entity>();
+	private List<Concept> concepts = new ArrayList<Concept>();
 	
 	public int getHashCode() {
 		return hashcode;
@@ -50,6 +51,14 @@ public class Alert {
 	
 	public List<Entity> getRelatedLocations() {
 		return relatedLocations;
+	}
+	
+	public List<Concept> getConcepts() {
+		return concepts;
+	}
+	
+	public void setConcepts(List<Concept> concepts) {
+		this.concepts = concepts;
 	}
 	
 	public String toString() {

@@ -60,7 +60,7 @@ public class FeedReader implements Runnable {
 			List<SyndEntry> entries = feed.getEntries();
 			for (SyndEntry entry : entries) {
 			    if(!alerts.containsKey(entry.hashCode())) {
-			    	Alert alert = alchemy.getAlert(entry);
+			    	Alert alert = alchemy.getAlerts(entry);
 			    	alerts.put(entry.hashCode(), alert);
 			    }
 			}
