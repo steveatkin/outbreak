@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Alert {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Alert implements Cloneable {
+	private static final Logger logger = LoggerFactory.getLogger(Alert.class);
 	private String title;
 	private Date date;
 	private int hashcode;
@@ -71,5 +75,17 @@ public class Alert {
 	
 	public String toString() {
 		return title;
+	}
+	
+	@Override
+	public Alert clone() {
+		Alert clone = null;
+		try {
+			clone = (Alert) super.clone();
+		}
+		catch(CloneNotSupportedException e) {
+			logger.error("cloning of alert not supported {}", e.getMessage());
+		}
+		return clone;
 	}
 }

@@ -84,6 +84,7 @@ public class Outbreak extends HttpServlet implements ServletContextListener {
     	if(healthScore != null && locationScore != null) {
     		double hscore = Double.parseDouble(healthScore);
     		double lscore = Double.parseDouble(locationScore);
+    		logger.debug("Health score: {} Location score {}", hscore, lscore);
     		alerts = FeedReader.getFilteredAlerts(hscore, lscore);
     	}
     	else {

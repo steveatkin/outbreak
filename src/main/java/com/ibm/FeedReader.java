@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,6 +49,7 @@ public class FeedReader implements Runnable {
 	}
 	
 	public static List<Alert> getAlerts() {
+		// return shallow copy
 		return new ArrayList<Alert>(alerts.values());
 	}
 	
@@ -66,9 +68,14 @@ public class FeedReader implements Runnable {
 			}
 		};
 		
-		ArrayList<Alert> filtered = new ArrayList<Alert>(alerts.values());
+		// Create a deep copy
+		Collection<Alert> copy = new ArrayList<Alert>(alerts.values().size());
+		Iterator<Alert> iterator = alerts.values().iterator();
+		while(iterator.hasNext()){
+		    copy.add(iterator.next().clone());
+		}
 		
-		for(Alert alert : filtered) {
+		for(Alert alert : copy) {
 			Collection<Entity> result = Collections2.filter(alert.getHealthConditions(), healthPredicate);
 			alert.setHealthConditions(new ArrayList<Entity>(result));
 			
@@ -76,7 +83,7 @@ public class FeedReader implements Runnable {
 			alert.setRelatedLocations(new ArrayList<Entity>(result));
 		}
 		
-		return filtered;
+		return new ArrayList<Alert>(copy);
 	}
 	
 	

@@ -1,7 +1,11 @@
 package com.ibm.alchemy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Concept {
+
+public class Concept implements Cloneable {
+	private static final Logger logger = LoggerFactory.getLogger(Concept.class);
 	private String concept = "";
 	private double relevance;
 
@@ -24,6 +28,18 @@ public class Concept {
 	}
 	
 	public String toString() {
-		return "CONCEPT: " + concept + " RELEVANCE: " + Double.toString(relevance); 
+		return "ConceptT: " + concept + " Score: " + Double.toString(relevance); 
+	}
+	
+	@Override
+	protected Concept clone() {
+		Concept clone = null;
+		try {
+			clone = (Concept) super.clone();
+		}
+		catch(CloneNotSupportedException e) {
+			logger.error("cloning of concept not supported {}", e.getMessage());
+		}
+		return clone;
 	}
 }
