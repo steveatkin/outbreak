@@ -5,19 +5,23 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Predicate;
 import com.ibm.alchemy.Alchemy;
 import com.ibm.alchemy.Alert;
+import com.ibm.alchemy.Entity;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+import com.google.common.collect.Collections2;
 
 
 public class FeedReader implements Runnable {
@@ -45,6 +49,34 @@ public class FeedReader implements Runnable {
 	
 	public static List<Alert> getAlerts() {
 		return new ArrayList<Alert>(alerts.values());
+	}
+	
+	public static List<Alert> getFilteredAlerts(final double hscore, final double lscore) {
+		Predicate<Entity> healthPredicate = new Predicate<Entity>() {
+			@Override
+			public boolean apply(Entity input) {
+				return (input.getRelevance() >= hscore);
+			}
+		};
+		
+		Predicate<Entity> locationPredicate = new Predicate<Entity>() {
+			@Override
+			public boolean apply(Entity input) {
+				return (input.getRelevance() >= lscore);
+			}
+		};
+		
+		ArrayList<Alert> filtered = new ArrayList<Alert>(alerts.values());
+		
+		for(Alert alert : filtered) {
+			Collection<Entity> result = Collections2.filter(alert.getHealthConditions(), healthPredicate);
+			alert.setHealthConditions(new ArrayList<Entity>(result));
+			
+			result = Collections2.filter(alert.getRelatedLocations(), locationPredicate);
+			alert.setRelatedLocations(new ArrayList<Entity>(result));
+		}
+		
+		return filtered;
 	}
 	
 	

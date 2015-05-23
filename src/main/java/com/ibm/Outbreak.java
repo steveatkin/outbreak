@@ -50,7 +50,7 @@ public class Outbreak extends HttpServlet implements ServletContextListener {
     	long initialDelay = 1;
         TimeUnit unit = TimeUnit.MINUTES;
         // period the period between successive executions
-        long period = 15;// 15 Minutes!
+        long period = 30;// 30 Minutes!
  
         scheduler.scheduleAtFixedRate(command, initialDelay, period, unit);
     }
@@ -75,9 +75,21 @@ public class Outbreak extends HttpServlet implements ServletContextListener {
 
     	OutputStream stream = response.getOutputStream();
     	OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
-		
-		List<Alert> alerts = FeedReader.getAlerts();
-		
+    	
+    	List<Alert> alerts = null;
+    	
+    	String healthScore = request.getParameter("hscore");
+    	String locationScore = request.getParameter("lscore");
+    	
+    	if(healthScore != null && locationScore != null) {
+    		double hscore = Double.parseDouble(healthScore);
+    		double lscore = Double.parseDouble(locationScore);
+    		alerts = FeedReader.getFilteredAlerts(hscore, lscore);
+    	}
+    	else {
+    		alerts = FeedReader.getAlerts();
+    	}
+    	
 		ObjectMapper mapper = new ObjectMapper();
 		//String listContents = mapper.writeValueAsString(alerts);
 		String listContents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(alerts);

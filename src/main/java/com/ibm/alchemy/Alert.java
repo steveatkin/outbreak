@@ -45,12 +45,20 @@ public class Alert {
 		relatedLocations.add(location);
 	}
 	
-	public List<Entity> getHealthConditions () {
+	public List<Entity> getHealthConditions() {
 		return healthConditions;
 	}
 	
 	public List<Entity> getRelatedLocations() {
 		return relatedLocations;
+	}
+	
+	public void setHealthConditions(List<Entity> healthConditions) {
+		this.healthConditions = healthConditions;
+	}
+	
+	public void setRelatedLocations(List<Entity> relatedLocations) {
+		this.relatedLocations = relatedLocations;
 	}
 	
 	public List<Concept> getConcepts() {
