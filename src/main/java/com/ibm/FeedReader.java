@@ -10,9 +10,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Predicate;
 import com.ibm.alchemy.Alchemy;
 import com.ibm.alchemy.Alert;
@@ -24,10 +32,10 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.google.common.collect.Collections2;
 
-
+@Path("/outbreak")
 public class FeedReader implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(FeedReader.class);
-	private static ConcurrentHashMap<Integer, Alert> alerts = new ConcurrentHashMap<>();
+	private static ConcurrentHashMap<Integer, Alert> alertsMap = new ConcurrentHashMap<>();
 	
 	
 	public void run() {
@@ -48,12 +56,27 @@ public class FeedReader implements Runnable {
 		readFeed("http://www.phac-aspc.gc.ca/rss/tm-mv-eng.xml");
 	}
 	
-	public static List<Alert> getAlerts() {
-		// return shallow copy
-		return new ArrayList<Alert>(alerts.values());
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response getAlerts(@QueryParam("hscore") double hscore, @QueryParam("lscore") double lscore) throws IOException{
+		List<Alert> alerts;
+		
+		if(hscore > 0 && lscore > 0) {
+			alerts = getFilteredAlerts(hscore, lscore);
+		}
+		else {
+			// make shallow copy
+			alerts = new ArrayList<Alert>(alertsMap.values());
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		//String listContents = mapper.writeValueAsString(alerts);
+		String listContents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(alerts);
+		
+		return Response.ok(listContents).build();
 	}
 	
-	public static List<Alert> getFilteredAlerts(final double hscore, final double lscore) {
+	private List<Alert> getFilteredAlerts(final double hscore, final double lscore) {
 		Predicate<Entity> healthPredicate = new Predicate<Entity>() {
 			@Override
 			public boolean apply(Entity input) {
@@ -69,8 +92,8 @@ public class FeedReader implements Runnable {
 		};
 		
 		// Create a deep copy
-		Collection<Alert> copy = new ArrayList<Alert>(alerts.values().size());
-		Iterator<Alert> iterator = alerts.values().iterator();
+		Collection<Alert> copy = new ArrayList<Alert>(alertsMap.values().size());
+		Iterator<Alert> iterator = alertsMap.values().iterator();
 		while(iterator.hasNext()){
 		    copy.add(iterator.next().clone());
 		}
@@ -98,9 +121,9 @@ public class FeedReader implements Runnable {
 			
 			List<SyndEntry> entries = feed.getEntries();
 			for (SyndEntry entry : entries) {
-			    if(!alerts.containsKey(entry.hashCode())) {
+			    if(!alertsMap.containsKey(entry.hashCode())) {
 			    	Alert alert = alchemy.getAlerts(entry);
-			    	alerts.put(entry.hashCode(), alert);
+			    	alertsMap.put(entry.hashCode(), alert);
 			    }
 			}
 		}
