@@ -17,6 +17,7 @@ public class Starter {
 	private static final Logger logger = LoggerFactory.getLogger(OutbreakApplication.class);
 	private ScheduledExecutorService scheduler;
 	
+	
 	@PostConstruct
     public void init() {
 		logger.debug("EJB starting executor");
@@ -31,4 +32,5 @@ public class Starter {
  
         scheduler.scheduleAtFixedRate(command, initialDelay, period, unit);
 	}
+	
 }

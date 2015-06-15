@@ -1,5 +1,7 @@
 package com.ibm.alchemy;
 
+
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +11,11 @@ public class Concept implements Cloneable {
 	private String concept = "";
 	private double relevance;
 
+	private ObjectId _id;
+	
+	public Concept() {
+		
+	}
 
 	public String getConcept() {
 		return concept;

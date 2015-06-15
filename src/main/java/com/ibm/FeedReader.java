@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,6 +16,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import com.google.common.base.Predicate;
 import com.ibm.alchemy.Alchemy;
 import com.ibm.alchemy.Alert;
 import com.ibm.alchemy.Entity;
+import com.ibm.alchemy.Location;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
@@ -35,15 +38,18 @@ import com.google.common.collect.Collections2;
 @Path("/outbreak")
 public class FeedReader implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(FeedReader.class);
-	private static ConcurrentHashMap<Integer, Alert> alertsMap = new ConcurrentHashMap<>();
+	private MongoCollection alerts;
+	private MongoCollection countries;
 	
 	
 	public void run() {
 		connectFeeds();
 	}
 	
-	public FeedReader() {
 	
+	public FeedReader() {
+		alerts = MongoConnection.getAlertsCollection();
+		countries = MongoConnection.getCountriesCollection();
 	}
 	
 	public void connectFeeds() {
@@ -58,25 +64,36 @@ public class FeedReader implements Runnable {
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getAlerts(@QueryParam("hscore") double hscore, @QueryParam("lscore") double lscore) throws IOException{
-		List<Alert> alerts;
+	public Response getAlerts(@QueryParam("hscore") double hscore, @QueryParam("lscore") double lscore, @QueryParam("country") String country) throws IOException{
+		Iterator<Alert> iterator;
+		MongoCursor<Alert> all;
 		
-		if(hscore > 0 && lscore > 0) {
-			alerts = getFilteredAlerts(hscore, lscore);
+		// see if we should first filter by country
+		if(country != null) {
+			all = alerts.find("{relatedLocations: { $all: [ {'$elemMatch': {'name': # } } ]} }", country).as(Alert.class);
+			iterator = all.iterator();
 		}
 		else {
-			// make shallow copy
-			alerts = new ArrayList<Alert>(alertsMap.values());
+			all = alerts.find().as(Alert.class);
+		}
+		
+		
+		// see if the results need to be filter based on relevance
+		if(hscore > 0 && lscore > 0) {
+			iterator = getFilteredAlerts(all.iterator(), hscore, lscore).iterator();
+		}
+		else {
+			iterator = all.iterator();
 		}
 		
 		ObjectMapper mapper = new ObjectMapper();
 		//String listContents = mapper.writeValueAsString(alerts);
-		String listContents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(alerts);
+		String listContents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(iterator);
 		
 		return Response.ok(listContents).build();
 	}
 	
-	private List<Alert> getFilteredAlerts(final double hscore, final double lscore) {
+	private List<Alert> getFilteredAlerts(Iterator<Alert> iterator, final double hscore, final double lscore) {
 		Predicate<Entity> healthPredicate = new Predicate<Entity>() {
 			@Override
 			public boolean apply(Entity input) {
@@ -92,13 +109,13 @@ public class FeedReader implements Runnable {
 		};
 		
 		// Create a deep copy
-		Collection<Alert> copy = new ArrayList<Alert>(alertsMap.values().size());
-		Iterator<Alert> iterator = alertsMap.values().iterator();
+		Collection<Alert> copy = new ArrayList<Alert>();
+		
 		while(iterator.hasNext()){
 		    copy.add(iterator.next().clone());
 		}
 		
-		for(Alert alert : copy) {
+		for(Alert alert: copy) {
 			Collection<Entity> result = Collections2.filter(alert.getHealthConditions(), healthPredicate);
 			alert.setHealthConditions(new ArrayList<Entity>(result));
 			
@@ -120,10 +137,26 @@ public class FeedReader implements Runnable {
 			Alchemy alchemy = new Alchemy();
 			
 			List<SyndEntry> entries = feed.getEntries();
+	
 			for (SyndEntry entry : entries) {
-			    if(!alertsMap.containsKey(entry.hashCode())) {
-			    	Alert alert = alchemy.getAlerts(entry);
-			    	alertsMap.put(entry.hashCode(), alert);
+				String hash = DigestUtils.md5Hex(entry.getTitle() + entry.getPublishedDate() + entry.getLink());
+				long count = alerts.count("{hashcode:#}", hash);
+				
+				// This entry is not in the database so add it
+				if(count == 0) {
+			    	Alert alert = alchemy.createAlert(entry, hash);
+			    	alerts.insert(alert);
+			    	logger.debug("Added alert {}", alert.toString());
+			    	
+			    	// Add the relevant countries to the country collection database
+			    	for(Entity entity: alert.getRelatedLocations()) {
+			    		String name = entity.getName();
+			    		
+			    		count = countries.count("{name:#}", name);
+			    		if(count == 0) {
+			    			countries.insert(new Location(name));
+			    		}
+			    	}
 			    }
 			}
 		}

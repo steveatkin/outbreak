@@ -31,9 +31,9 @@ public class Alchemy {
 		
 	}
 	
-	public Alert getAlerts(SyndEntry entry) {
+	public Alert createAlert(SyndEntry entry, String hash) {
 		Alert alert = new Alert();
-		alert.setHashCode(entry.hashCode());
+		alert.setHashCode(hash);
 		alert.setTitle(entry.getTitle());
 		alert.setDate(entry.getPublishedDate());
 		String url = entry.getLink();

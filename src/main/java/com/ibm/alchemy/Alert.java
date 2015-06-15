@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 public class Alert implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(Alert.class);
 	private String title;
 	private Date date;
-	private int hashcode;
+	private String hashcode;
+	
+	private ObjectId _id;
 	
 	private List<Entity> healthConditions = new ArrayList<Entity>();
 	private List<Entity> relatedLocations = new ArrayList<Entity>();
 	private List<Concept> concepts = new ArrayList<Concept>();
 	
-	public int getHashCode() {
+	public Alert() {
+		
+	}
+	
+	public String getHashCode() {
 		return hashcode;
 	}
 	
-	public void setHashCode(int hash) {
+	public void setHashCode(String hash) {
 		hashcode = hash;
 	}
 

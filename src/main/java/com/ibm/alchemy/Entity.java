@@ -1,14 +1,20 @@
 package com.ibm.alchemy;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class Entity implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(Entity.class);
 	private String name;
 	private double relevance;
 	private String type;
+	
+	private ObjectId _id;
+	
+	public Entity() {
+		
+	}
 
 	public Entity(String name, double relevance, String type) {
 		this.name = name;
