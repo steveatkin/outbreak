@@ -24,6 +24,7 @@ public class MongoConnection {
 		try {
 			JSONObject sysEnv = getVcapServices();
 			MongoClient mongo;
+			DB db;
 			
 			logger.info("Processing VCAP_SERVICES");
 			logger.info("Looking for: "+ mongoService);
@@ -35,16 +36,18 @@ public class MongoConnection {
 				baseURLMongo = (String)credentials.get("uri");
 				MongoClientURI mongoURI = new MongoClientURI(baseURLMongo);
 				mongo = new MongoClient(mongoURI);
+				String dbName = mongoURI.getDatabase();
+				db = mongo.getDB(dbName);
 				logger.info("baseURL  = "+ baseURLMongo);
 			}
 			else {
 				logger.debug("Starting mongo localhost");
 				mongo = new MongoClient("127.0.0.1", 27017);
+				db = mongo.getDB("outbreak");
 				logger.debug("Mongo up localhost");
 			}
 			
-			@SuppressWarnings("deprecation")
-			DB db = mongo.getDB("outbreak");
+			
 			Jongo jongo = new Jongo(db);
 			alerts = jongo.getCollection("alerts");
 			countries = jongo.getCollection("countries");	
