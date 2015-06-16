@@ -49,7 +49,7 @@ public class FeedReader implements Runnable {
 	
 	public FeedReader() {
 		alerts = MongoConnection.getAlertsCollection();
-		countries = MongoConnection.getCountriesCollection();
+		countries = MongoConnection.getLocationsCollection();
 	}
 	
 	public void connectFeeds() {
@@ -64,13 +64,13 @@ public class FeedReader implements Runnable {
 	
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response getAlerts(@QueryParam("hscore") double hscore, @QueryParam("lscore") double lscore, @QueryParam("country") String country) throws IOException{
+	public Response getAlerts(@QueryParam("hscore") double hscore, @QueryParam("lscore") double lscore, @QueryParam("location") String location) throws IOException{
 		Iterator<Alert> iterator;
 		MongoCursor<Alert> all;
 		
 		// see if we should first filter by country
-		if(country != null) {
-			all = alerts.find("{relatedLocations: { $all: [ {'$elemMatch': {'name': # } } ]} }", country).as(Alert.class);
+		if(location != null) {
+			all = alerts.find("{relatedLocations: { $all: [ {'$elemMatch': {'name': # } } ]} }", location).as(Alert.class);
 			iterator = all.iterator();
 		}
 		else {

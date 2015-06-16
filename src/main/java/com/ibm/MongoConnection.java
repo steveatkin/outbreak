@@ -18,7 +18,7 @@ public class MongoConnection {
 	
 	
 	private static MongoCollection alerts;
-	private static MongoCollection countries;
+	private static MongoCollection locations;
 	
 	static {
 		try {
@@ -50,7 +50,7 @@ public class MongoConnection {
 			
 			Jongo jongo = new Jongo(db);
 			alerts = jongo.getCollection("alerts");
-			countries = jongo.getCollection("countries");	
+			locations = jongo.getCollection("countries");	
 		}
 		catch(Exception e) {
 			logger.error("Could not connect to mongodb {}", e.toString());
@@ -80,7 +80,7 @@ public class MongoConnection {
 		return alerts;
 	}
 	
-	protected static MongoCollection getCountriesCollection() {
-		return countries;
+	protected static MongoCollection getLocationsCollection() {
+		return locations;
 	}
 }

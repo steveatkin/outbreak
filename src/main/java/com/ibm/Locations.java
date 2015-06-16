@@ -16,12 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.alchemy.Alert;
 import com.ibm.alchemy.Location;
 
-@Path("/countries")
-public class Countries {
+@Path("/locations")
+public class Locations {
 	private MongoCollection countries;
 	
-	public Countries() {
-		countries = MongoConnection.getCountriesCollection();
+	public Locations() {
+		countries = MongoConnection.getLocationsCollection();
 	}
 
 	@GET
