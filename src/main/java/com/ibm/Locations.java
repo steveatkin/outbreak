@@ -13,7 +13,6 @@ import org.jongo.MongoCollection;
 import org.jongo.MongoCursor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ibm.alchemy.Alert;
 import com.ibm.alchemy.Location;
 
 @Path("/locations")
@@ -31,11 +30,10 @@ public class Locations {
 		MongoCursor<Location> all;
 		
 		
-		all = countries.find().as(Location.class);
+		all = countries.find().sort("{name: 1}").as(Location.class);
 		iterator = all.iterator();
 		
 		ObjectMapper mapper = new ObjectMapper();
-		//String listContents = mapper.writeValueAsString(alerts);
 		String listContents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(iterator);
 		
 		return Response.ok(listContents).build();
