@@ -70,7 +70,7 @@ public class FeedReader implements Runnable {
 		
 		// see if we should first filter by country
 		if(location != null) {
-			all = alerts.find("{relatedLocations: { $all: [ {'$elemMatch': {'name': # } } ]} }", location).as(Alert.class);
+			all = alerts.find("{relatedLocations: { $all: [ {'$elemMatch': {'name': # } } ]} }", location).sort("{date: 1}").as(Alert.class);
 			iterator = all.iterator();
 		}
 		else {
