@@ -21,6 +21,7 @@ public class Alert implements Cloneable {
 	
 	private List<Entity> healthConditions = new ArrayList<Entity>();
 	private List<Entity> relatedLocations = new ArrayList<Entity>();
+	private List<Keyword> titleKeywords = new ArrayList<Keyword>();
 	private List<Concept> concepts = new ArrayList<Concept>();
 	
 	public Alert() {
@@ -49,6 +50,18 @@ public class Alert implements Cloneable {
 	
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	
+	public void addTitleKeyword(Keyword keyword) {
+		titleKeywords.add(keyword);
+	}
+	
+	public List<Keyword> getTitleKeywords() {
+		return titleKeywords;
+	}
+	
+	public void setTitleKeywords(List<Keyword> keywords) {
+		this.titleKeywords = keywords;
 	}
 	
 	public Date getDate() {

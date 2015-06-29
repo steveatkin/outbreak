@@ -10,12 +10,15 @@ import org.slf4j.LoggerFactory;
 
 import com.likethecolor.alchemy.api.Client;
 import com.likethecolor.alchemy.api.call.AbstractCall;
+import com.likethecolor.alchemy.api.call.RankedKeywordsCall;
 import com.likethecolor.alchemy.api.call.RankedNamedEntitiesCall;
 import com.likethecolor.alchemy.api.entity.ConceptAlchemyEntity;
+import com.likethecolor.alchemy.api.entity.KeywordAlchemyEntity;
 import com.likethecolor.alchemy.api.entity.NamedEntityAlchemyEntity;
 import com.likethecolor.alchemy.api.entity.Response;
 import com.likethecolor.alchemy.api.call.RankedConceptsCall;
 import com.likethecolor.alchemy.api.call.type.CallTypeUrl;
+import com.likethecolor.alchemy.api.call.type.CallTypeText;
 import com.rometools.rome.feed.synd.SyndEntry;
 
 public class Alchemy {
@@ -72,8 +75,24 @@ public class Alchemy {
 					}
 					
 				}
+				
+				// get all the entities for the title of the news feed
+				AbstractCall<KeywordAlchemyEntity> rankedKeywordsCall = new RankedKeywordsCall(new CallTypeText(entry.getTitle()));
+				Response<KeywordAlchemyEntity> keywordResponse = client.call(rankedKeywordsCall);
+				
+				KeywordAlchemyEntity keywordalchemyEntity;
+				Iterator<KeywordAlchemyEntity> iterator = keywordResponse.iterator();
+				
+				while(iter.hasNext()) {
+					keywordalchemyEntity = iterator.next();
+					Keyword keyword = new Keyword(
+							keywordalchemyEntity.getKeyword(),
+							keywordalchemyEntity.getScore()
+							);
+					alert.addTitleKeyword(keyword);
+				}
+	
 			}
-			
 			
 		}
 		catch(IOException e) {
