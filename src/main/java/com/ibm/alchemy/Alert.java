@@ -15,6 +15,7 @@ public class Alert implements Cloneable {
 	private String title;
 	private Date date;
 	private String hashcode;
+	private String url;
 	
 	private ObjectId _id;
 	
@@ -34,6 +35,14 @@ public class Alert implements Cloneable {
 		hashcode = hash;
 	}
 
+	public String getURL() {
+		return url;
+	}
+	
+	public void setURL(String url) {
+		this.url = url;
+	}
+	
 	public String getTitle() {
 		return title;
 	}

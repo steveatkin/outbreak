@@ -37,6 +37,7 @@ public class Alchemy {
 		alert.setTitle(entry.getTitle());
 		alert.setDate(entry.getPublishedDate());
 		String url = entry.getLink();
+		alert.setURL(url);
 		
 		try {
 			if(url != null && apiKey != null) {
