@@ -12,6 +12,7 @@ import com.likethecolor.alchemy.api.Client;
 import com.likethecolor.alchemy.api.call.AbstractCall;
 import com.likethecolor.alchemy.api.call.RankedKeywordsCall;
 import com.likethecolor.alchemy.api.call.RankedNamedEntitiesCall;
+import com.likethecolor.alchemy.api.call.RawTextCall;
 import com.likethecolor.alchemy.api.entity.ConceptAlchemyEntity;
 import com.likethecolor.alchemy.api.entity.KeywordAlchemyEntity;
 import com.likethecolor.alchemy.api.entity.NamedEntityAlchemyEntity;
@@ -83,7 +84,7 @@ public class Alchemy {
 				KeywordAlchemyEntity keywordalchemyEntity;
 				Iterator<KeywordAlchemyEntity> iterator = keywordResponse.iterator();
 				
-				while(iter.hasNext()) {
+				while(iterator.hasNext()) {
 					keywordalchemyEntity = iterator.next();
 					Keyword keyword = new Keyword(
 							keywordalchemyEntity.getKeyword(),
