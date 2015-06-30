@@ -45,16 +45,40 @@ public class Alchemy {
 		try {
 			if(url != null && apiKey != null) {
 				Client client = new Client(apiKey);
+				
+				// get all the keywords for the title of the news feed
+				AbstractCall<KeywordAlchemyEntity> rankedKeywordsCall = new RankedKeywordsCall(new CallTypeText(entry.getTitle()));
+				Response<KeywordAlchemyEntity> keywordResponse = client.call(rankedKeywordsCall);
+				
+				KeywordAlchemyEntity keywordalchemyEntity;
+				Iterator<KeywordAlchemyEntity> keywordIterator = keywordResponse.iterator();
+				
+				while(keywordIterator.hasNext()) {
+					keywordalchemyEntity = keywordIterator.next();
+					Entity keyword = new Entity(
+							keywordalchemyEntity.getKeyword(),
+							keywordalchemyEntity.getScore()
+							);
+					
+					// Just add keywords that are health conditions
+					if(HealthConditions.isHealthCondition(keyword)) {
+						keyword.setType("HealthCondition");
+						alert.addHealthCondition(keyword);
+					}
+				}
+				
+				
+				// Process the url of the RSS feed
 				AbstractCall<NamedEntityAlchemyEntity> rankedEntitiesCall = new RankedNamedEntitiesCall(new CallTypeUrl(url));
 				Response<NamedEntityAlchemyEntity> entityResponse = client.call(rankedEntitiesCall);
 				
 				alert.setConcepts(getConcepts(url));
 				
 				NamedEntityAlchemyEntity entityalchemyEntity;
-				Iterator<NamedEntityAlchemyEntity> iter = entityResponse.iterator();
+				Iterator<NamedEntityAlchemyEntity> entityIterator = entityResponse.iterator();
 				
-				while(iter.hasNext()) {
-					entityalchemyEntity = iter.next();
+				while(entityIterator.hasNext()) {
+					entityalchemyEntity = entityIterator.next();
 					String type = entityalchemyEntity.getType();
 					
 					if(type.equalsIgnoreCase("HealthCondition")) {
@@ -72,31 +96,8 @@ public class Alchemy {
 								type
 								);
 						alert.addRelatedLocation(location);
-					}
-					
+					}	
 				}
-				
-				// get all the keywords for the title of the news feed
-				AbstractCall<KeywordAlchemyEntity> rankedKeywordsCall = new RankedKeywordsCall(new CallTypeText(entry.getTitle()));
-				Response<KeywordAlchemyEntity> keywordResponse = client.call(rankedKeywordsCall);
-				
-				KeywordAlchemyEntity keywordalchemyEntity;
-				Iterator<KeywordAlchemyEntity> iterator = keywordResponse.iterator();
-				
-				while(iterator.hasNext()) {
-					keywordalchemyEntity = iterator.next();
-					Entity keyword = new Entity(
-							keywordalchemyEntity.getKeyword(),
-							keywordalchemyEntity.getScore()
-							);
-					
-					// Just add keywords that are health conditions
-					if(HealthConditions.isHealthCondition(keyword)) {
-						keyword.setType("HealthCondition");
-						alert.addHealthCondition(keyword);
-					}
-				}
-	
 			}
 			
 		}

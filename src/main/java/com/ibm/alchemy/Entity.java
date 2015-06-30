@@ -66,7 +66,7 @@ public class Entity implements Cloneable {
 	public boolean equals(Object o){
 		boolean retVal = false;
 		
-		if(o instanceof Keyword){
+		if(o instanceof Entity){
 			Entity toCompare = (Entity) o;
 		    retVal = this.name.equalsIgnoreCase(toCompare.name);
 		 }
