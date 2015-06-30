@@ -16,6 +16,18 @@ public class Entity implements Cloneable {
 		
 	}
 
+	public Entity(String name, String type) {
+		this(name, 1.0, type);
+	}
+	
+	public Entity(String name, double relevance) {
+		this(name, relevance, "");
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	public Entity(String name, double relevance, String type) {
 		this.name = name;
 		this.relevance = relevance;
@@ -50,4 +62,14 @@ public class Entity implements Cloneable {
 		return clone;
 	}
 
+	@Override
+	public boolean equals(Object o){
+		boolean retVal = false;
+		
+		if(o instanceof Keyword){
+			Entity toCompare = (Entity) o;
+		    retVal = this.name.equalsIgnoreCase(toCompare.name);
+		 }
+		 return retVal;
+	}
 }

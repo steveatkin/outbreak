@@ -73,7 +73,9 @@ public class Alert implements Cloneable {
 	}
 	
 	public void addHealthCondition(Entity condition) {
-		healthConditions.add(condition);
+		if(!healthConditions.contains(condition)) {
+			healthConditions.add(condition);
+		}
 	}
 	
 	public void addRelatedLocation(Entity location) {

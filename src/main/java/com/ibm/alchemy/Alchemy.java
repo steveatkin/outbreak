@@ -85,7 +85,7 @@ public class Alchemy {
 				
 				while(iterator.hasNext()) {
 					keywordalchemyEntity = iterator.next();
-					Keyword keyword = new Keyword(
+					Entity keyword = new Entity(
 							keywordalchemyEntity.getKeyword(),
 							keywordalchemyEntity.getScore()
 							);
@@ -93,7 +93,7 @@ public class Alchemy {
 					// Just add keywords that are health conditions
 					if(HealthConditions.isHealthCondition(keyword)) {
 						keyword.setType("HealthCondition");
-						alert.addTitleKeyword(keyword);
+						alert.addHealthCondition(keyword);
 					}
 				}
 	
