@@ -12,7 +12,6 @@ import com.likethecolor.alchemy.api.Client;
 import com.likethecolor.alchemy.api.call.AbstractCall;
 import com.likethecolor.alchemy.api.call.RankedKeywordsCall;
 import com.likethecolor.alchemy.api.call.RankedNamedEntitiesCall;
-import com.likethecolor.alchemy.api.call.RawTextCall;
 import com.likethecolor.alchemy.api.entity.ConceptAlchemyEntity;
 import com.likethecolor.alchemy.api.entity.KeywordAlchemyEntity;
 import com.likethecolor.alchemy.api.entity.NamedEntityAlchemyEntity;
@@ -77,7 +76,7 @@ public class Alchemy {
 					
 				}
 				
-				// get all the entities for the title of the news feed
+				// get all the keywords for the title of the news feed
 				AbstractCall<KeywordAlchemyEntity> rankedKeywordsCall = new RankedKeywordsCall(new CallTypeText(entry.getTitle()));
 				Response<KeywordAlchemyEntity> keywordResponse = client.call(rankedKeywordsCall);
 				
@@ -90,7 +89,12 @@ public class Alchemy {
 							keywordalchemyEntity.getKeyword(),
 							keywordalchemyEntity.getScore()
 							);
-					alert.addTitleKeyword(keyword);
+					
+					// Just add keywords that are health conditions
+					if(HealthConditions.isHealthCondition(keyword)) {
+						keyword.setType("HealthCondition");
+						alert.addTitleKeyword(keyword);
+					}
 				}
 	
 			}
