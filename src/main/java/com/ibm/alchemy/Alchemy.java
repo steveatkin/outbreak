@@ -137,7 +137,7 @@ public class Alchemy {
 			builder.setScheme("https").setHost(alchemyURL).setPath("/calls/data/GetNews")
 				.setParameter("apikey", apiKey)
 				.setParameter("outputMode", "json")
-				.setParameter("start", "now-7d")
+				.setParameter("start", "now-60d")
 				.setParameter("end", "now")
 				.setParameter("maxResults", "10")
 				.setParameter("q.enriched.url.title", searchQuery)
