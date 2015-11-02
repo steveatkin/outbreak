@@ -13,19 +13,19 @@ import com.mongodb.MongoClientURI;
 
 public class MongoConnection {
 	private static final Logger logger = LoggerFactory.getLogger(MongoConnection.class);
-	private static String mongoService = "mongolab";
+	private static String mongoService = "user-provided";
 	private static String baseURLMongo = "";
-	
-	
+
+
 	private static MongoCollection alerts;
 	private static MongoCollection locations;
-	
+
 	static {
 		try {
 			JSONObject sysEnv = getVcapServices();
 			MongoClient mongo;
 			DB db;
-			
+
 			logger.info("Processing VCAP_SERVICES");
 			logger.info("Looking for: "+ mongoService);
 
@@ -46,17 +46,17 @@ public class MongoConnection {
 				db = mongo.getDB("outbreak");
 				logger.debug("Mongo up localhost");
 			}
-			
-			
+
+
 			Jongo jongo = new Jongo(db);
 			alerts = jongo.getCollection("alerts");
-			locations = jongo.getCollection("countries");	
+			locations = jongo.getCollection("countries");
 		}
 		catch(Exception e) {
 			logger.error("Could not connect to mongodb {}", e.toString());
 		}
 	}
-	
+
 	private static JSONObject getVcapServices() {
         String envServices = System.getenv("VCAP_SERVICES");
         JSONObject sysEnv = null;
@@ -75,11 +75,11 @@ public class MongoConnection {
 
         return sysEnv;
     }
-	
+
 	protected static MongoCollection getAlertsCollection() {
 		return alerts;
 	}
-	
+
 	protected static MongoCollection getLocationsCollection() {
 		return locations;
 	}
