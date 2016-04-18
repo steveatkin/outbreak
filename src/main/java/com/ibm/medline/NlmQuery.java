@@ -29,7 +29,7 @@ public class NlmQuery {
 		
 		try {
 			URIBuilder builder = new URIBuilder();
-			builder.setScheme("http").setHost("wsearch.nlm.nih.gov").setPath("/ws/query")
+			builder.setScheme("https").setHost("wsearch.nlm.nih.gov").setPath("/ws/query")
 				.setParameter("db", "healthTopics")
 				.setParameter("term", term)
 				.setParameter("retmax", "1");
