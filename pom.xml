@@ -14,11 +14,6 @@
       <name>wasdev-maven-repo</name>
       <url>http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/maven/repository/</url>
     </repository>
-    <repository>
-      <id>in-project</id>
-      <name>In Project Repo</name>
-      <url>file:${project.basedir}/libs</url>
-    </repository>
   </repositories>
 
   <dependencies>
@@ -45,12 +40,6 @@
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>com.likethecolor</groupId>
-        <artifactId>alchemy</artifactId>
-        <version>1.1.6</version>
-        <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
@@ -156,9 +145,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.ibm.gaas</groupId>
-      <artifactId>gaas-java-client</artifactId>
-      <version>1.0.0</version>
+      <groupId>com.ibm.g11n.pipeline</groupId>
+      <artifactId>gp-java-client</artifactId>
+      <version>1.1.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -197,6 +186,12 @@
        <version>1.8.2</version>
        <scope>compile</scope>
      </dependency>
+     <dependency>
+      <groupId>com.ibm.watson.developer_cloud</groupId>
+      <artifactId>java-sdk</artifactId>
+      <version>3.7.2</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>
